@@ -180,12 +180,12 @@ extension ZegoUIKitPrebuiltCallInvitationService: CallInvitationServiceApi {
             let bundle = Bundle(identifier: bundleID)
             if (bundle != nil) {
                 let version = bundle?.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-                LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][initWithAppID] \(name) version: \(version ?? "UNKNOWN")")
+                //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][initWithAppID] \(name) version: \(version ?? "UNKNOWN")")
                 bundleVerMap[name+"_version"] = (version ?? "UNKNOWN")
             }
         }
         
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][initWithAppID] initWithAppID:\(appID), userID:\(userID), userName:\(userName), config:...")
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][initWithAppID] initWithAppID:\(appID), userID:\(userID), userName:\(userName), config:...")
 
         var reportData: [String: String] = ["user_id": userID,
                      "platform": "iOS",
@@ -219,7 +219,7 @@ extension ZegoUIKitPrebuiltCallInvitationService: CallInvitationServiceApi {
     }
     
     @objc public func initWithAppID(_ appID: UInt32, appSign: String, userID: String, userName: String) {
-        LogManager.sharedInstance().write("initWithAppID:\(appID), userID:\(userID), userName:\(userName)")
+        //LogManager.sharedInstance().write("initWithAppID:\(appID), userID:\(userID), userName:\(userName)")
         
         let callSDKBundle = Bundle(identifier: "org.cocoapods.ZegoUIKitPrebuiltCall")
         let callVersion = callSDKBundle?.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
@@ -476,7 +476,7 @@ extension ZegoUIKitPrebuiltCallInvitationService: CallInvitationServiceApi {
     }
     
     @objc public static func enableVoIP(isSandboxEnvironment: Bool) {
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][enableVoIP] isSandbox:\(isSandboxEnvironment)", flush: true)
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][enableVoIP] isSandbox:\(isSandboxEnvironment)", flush: true)
         ZegoPluginAdapter.callkitPlugin?.enableVoIP(isSandboxEnvironment)
     }
 }
@@ -491,7 +491,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
     }
     
     func onInvitationReceived(_ inviter: ZegoUIKitUser, type: Int, data: String?) {
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onInvitationReceived] inviter:\(inviter.userID ?? "UNKNOWN"), type:\(type), data:\(data ?? "")")
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onInvitationReceived] inviter:\(inviter.userID ?? "UNKNOWN"), type:\(type), data:\(data ?? "")")
         
         // call invitation type, 0 - audio, 1 - video
         if type != 0 && type != 1 {
@@ -906,7 +906,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
     
     // MARK: CallKit
     func didReceiveIncomingPush(_ uuid: UUID, invitationID: String, data: String) {
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][didReceiveIncomingPush] uuid:\(uuid.uuidString), invitationID:\(invitationID), data:\(data)", flush: true)
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][didReceiveIncomingPush] uuid:\(uuid.uuidString), invitationID:\(invitationID), data:\(data)", flush: true)
         
         let appState:String = UIApplication.shared.applicationState == .active ? "active" : (UIApplication.shared.applicationState == .background ? "background" : "restarted")
         let voipData = ["call_id": invitationID as AnyObject,
@@ -926,7 +926,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
     }
     
     func onCallKitAnswerCall(_ action: CallKitAction) {
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onCallKitAnswerCall]", flush: true)
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onCallKitAnswerCall]", flush: true)
 
         let invitationData = ZegoUIKitPrebuiltCallInvitationService.shared.invitationData
         let inviterUserID = invitationData?.inviter?.userID ?? ""
@@ -971,7 +971,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
     }
     
     func onCallKitEndCall(_ action: CallKitAction) {
-        LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onCallKitEndCall]", flush: true)
+        //LogManager.sharedInstance().write("[PrebuiltCall][ZegoUIKitPrebuiltCallInvitationService][onCallKitEndCall]", flush: true)
         
         let appState:String = UIApplication.shared.applicationState == .active ? "active" : (UIApplication.shared.applicationState == .background ? "background" : "restarted")
 
