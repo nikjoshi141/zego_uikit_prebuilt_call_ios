@@ -135,36 +135,38 @@ class ZegoMinimizeManager: NSObject {
         ])
     }
     
-    func stopPiP() {
-        if #available(iOS 15.0, *) {
-            if isOneOnOneVideo {
-                guard let pipVC = pipVC else { return }
-                if pipVC.isPictureInPictureActive {
-                    isNarrow = false
-                    pipVC.stopPictureInPicture()
-                }
-            } else {
-                narrowWindow.closeNarrowWindow()
-                callVC?.willStopPictureInPicture()
-            }
-        }
-    }
-    func startPip() {
-        if #available(iOS 15.0, *) {
-            if isOneOnOneVideo {
-                guard let pipVC = pipVC else { return }
-                pipVC.startPictureInPicture()
-            } else {
-                if let pipAudioView = pipAudioView {
-                    pipAudioView.removeFromSuperview()
-                    self.pipAudioView = nil
-                }
-                pipAudioView = ZegoCallAudioPipView()
-                let desFrame: CGRect = CGRectMake(UIScreen.main.bounds.width - 65, 51 + ZegoCallNarrowWindow.getStatusBarHight(), 60, 60)
-                self.narrowWindow.showNarrowWindow(contentView: pipAudioView!, desFrame: desFrame)
-            }
-        }
-    }
+//    func stopPiP() {
+//        if #available(iOS 15.0, *) {
+//            if isOneOnOneVideo {
+//                guard let pipVC = pipVC else { return }
+//                if pipVC.isPictureInPictureActive {
+//                    isNarrow = false
+//                    pipVC.stopPictureInPicture()
+//                }
+//            } else {
+//                narrowWindow.closeNarrowWindow()
+//                callVC?.willStopPictureInPicture()
+//            }
+//        }
+//    }
+//    func startPip() {
+//        if #available(iOS 15.0, *) {
+//            if isOneOnOneVideo {
+//                guard let pipVC = pipVC else { return }
+//                pipVC.startPictureInPicture()
+//            } else {
+//                if let pipAudioView = pipAudioView {
+//                    pipAudioView.removeFromSuperview()
+//                    self.pipAudioView = nil
+//                }
+//                pipAudioView = ZegoCallAudioPipView()
+//                let desFrame: CGRect = CGRectMake(UIScreen.main.bounds.width - 65, 51 + ZegoCallNarrowWindow.getStatusBarHight(), 60, 60)
+//                self.narrowWindow.showNarrowWindow(contentView: pipAudioView!, desFrame: desFrame)
+//            }
+//        }
+//    }
+    
+    
     
     func destroy() {
         if #available(iOS 15.0, *) {
@@ -245,5 +247,98 @@ extension ZegoMinimizeManager: ZegoUIKitEventHandle {
     
     func onCapturedVideoFrameCVPixelBuffer(_ buffer: CVPixelBuffer, param: ZegoVideoFrameParam, flipMode: ZegoVideoFlipMode, channel: ZegoPublishChannel) {
         pipView?.onCapturedVideoFrameCVPixelBuffer(buffer, param: param, flipMode: flipMode, channel: channel)
+    }
+}
+
+
+extension ZegoMinimizeManager {
+    
+    func stopPiP() {
+        if #available(iOS 15.0, *) {
+            if isOneOnOneVideo {
+                guard let pipVC = pipVC else { return }
+                if pipVC.isPictureInPictureActive {
+                    isNarrow = false
+                    pipVC.stopPictureInPicture()
+                }
+            } else {
+                narrowWindow.closeNarrowWindow()
+                CallOverlayWindow.shared.hide()
+                callVC?.willStopPictureInPicture()
+            }
+        }
+    }
+    
+    func startPip() {
+        if #available(iOS 15.0, *) {
+            if isOneOnOneVideo {
+                guard let pipVC = pipVC else { return }
+                pipVC.startPictureInPicture()
+            } else {
+                if let pipAudioView = pipAudioView {
+                    pipAudioView.removeFromSuperview()
+                    self.pipAudioView = nil
+                }
+
+                pipAudioView = ZegoCallAudioPipView()
+
+                let targetFrame = CGRect(
+                    x: UIScreen.main.bounds.width - 65,
+                    y: 51 + ZegoCallNarrowWindow.getStatusBarHight(),
+                    width: 60,
+                    height: 60
+                )
+
+                let narrowWindow = ZegoCallNarrowWindow(frame: targetFrame)
+
+                narrowWindow.showNarrowWindow(contentView: pipAudioView!, desFrame: narrowWindow.bounds)
+
+                CallOverlayWindow.shared.show(view: narrowWindow, frame: targetFrame)
+            }
+        }
+    }
+    
+    
+}
+
+
+class CallOverlayWindow {
+    static let shared = CallOverlayWindow()
+
+    private var overlayWindow: UIWindow?
+
+    func show(view: UIView, frame: CGRect) {
+        if overlayWindow != nil {
+            return // already showing
+        }
+
+        let window = UIWindow(frame: frame)
+        window.windowLevel = .alert + 1
+        window.backgroundColor = .clear
+        window.isHidden = false
+
+        // Make sure the view isn't stretched
+        view.frame = window.bounds
+
+        let containerVC = UIViewController()
+        containerVC.view.backgroundColor = .clear
+        containerVC.view.addSubview(view)
+
+        window.rootViewController = containerVC
+        window.makeKeyAndVisible()
+
+        self.overlayWindow = window
+    }
+
+    func hide() {
+        overlayWindow?.isHidden = true
+        overlayWindow = nil
+    }
+
+    func updateFrame(_ newFrame: CGRect) {
+        guard let window = overlayWindow else { return }
+        window.frame = newFrame
+        window.rootViewController?.view.frame = window.bounds
+        window.rootViewController?.view.subviews.first?.frame = window.bounds
     }
 }

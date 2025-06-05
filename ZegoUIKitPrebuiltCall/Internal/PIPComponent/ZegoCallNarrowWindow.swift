@@ -21,31 +21,31 @@ class ZegoCallNarrowWindow: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func panGesture(gesture: UIPanGestureRecognizer) {
-        if gesture.state == .changed {
-            let translation: CGPoint = gesture.translation(in: self)
-            center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
-            gesture.setTranslation(.zero, in: self)
-        } else if gesture.state == .ended || gesture.state == .cancelled {
-            var toFrame: CGRect = self.frame
-            if (self.center.x < UIScreen.main.bounds.width / 2.0) {
-                toFrame.origin.x = kBerthRegionWidth;
-            } else {
-                toFrame.origin.x = UIScreen.main.bounds.width - kBerthRegionWidth - self.bounds.width;
-            }
-            if self.frame.origin.y < ZegoCallNarrowWindow.getStatusBarHight() {
-                toFrame.origin.y = ZegoCallNarrowWindow.getStatusBarHight()
-            } else if (self.frame.origin.y + self.frame.size.height) > (UIScreen.main.bounds.height - ZegoCallNarrowWindow.getVirtualHomeHeight()) {
-                toFrame.origin.y = UIScreen.main.bounds.height - ZegoCallNarrowWindow.getStatusBarHight() - self.bounds.height
-            }
-            UIView.animate(withDuration: 0.65, delay: 0.0, usingSpringWithDamping: 0.59, initialSpringVelocity: 0, options: .curveLinear) {
-                self.frame = toFrame
-            }completion: { finished in
-                
-            }
-            
-        }
-    }
+//    @objc func panGesture(gesture: UIPanGestureRecognizer) {
+//        if gesture.state == .changed {
+//            let translation: CGPoint = gesture.translation(in: self)
+//            center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
+//            gesture.setTranslation(.zero, in: self)
+//        } else if gesture.state == .ended || gesture.state == .cancelled {
+//            var toFrame: CGRect = self.frame
+//            if (self.center.x < UIScreen.main.bounds.width / 2.0) {
+//                toFrame.origin.x = kBerthRegionWidth;
+//            } else {
+//                toFrame.origin.x = UIScreen.main.bounds.width - kBerthRegionWidth - self.bounds.width;
+//            }
+//            if self.frame.origin.y < ZegoCallNarrowWindow.getStatusBarHight() {
+//                toFrame.origin.y = ZegoCallNarrowWindow.getStatusBarHight()
+//            } else if (self.frame.origin.y + self.frame.size.height) > (UIScreen.main.bounds.height - ZegoCallNarrowWindow.getVirtualHomeHeight()) {
+//                toFrame.origin.y = UIScreen.main.bounds.height - ZegoCallNarrowWindow.getStatusBarHight() - self.bounds.height
+//            }
+//            UIView.animate(withDuration: 0.65, delay: 0.0, usingSpringWithDamping: 0.59, initialSpringVelocity: 0, options: .curveLinear) {
+//                self.frame = toFrame
+//            }completion: { finished in
+//
+//            }
+//
+//        }
+//    }
     
     static func getVirtualHomeHeight() -> CGFloat {
         var virtualHomeHeight: CGFloat = 0
@@ -101,6 +101,53 @@ class ZegoCallNarrowWindow: UIView {
             self.layoutIfNeeded()
         } completion: { finished in
             self.removeFromSuperview()
+        }
+    }
+}
+
+
+extension ZegoCallNarrowWindow {
+    @objc func panGesture(gesture: UIPanGestureRecognizer) {
+        guard let window = self.window else { return } // ✅ get owning UIWindow
+
+        let translation = gesture.translation(in: window)
+
+        switch gesture.state {
+        case .changed:
+            // ✅ Move the entire window
+            window.center = CGPoint(x: window.center.x + translation.x,
+                                    y: window.center.y + translation.y)
+            gesture.setTranslation(.zero, in: window)
+
+        case .ended, .cancelled:
+            // Optional: snap to edges logic here, using window.frame.origin
+            var toFrame = window.frame
+
+            let screenBounds = UIScreen.main.bounds
+
+            // Snap horizontally
+            if window.center.x < screenBounds.width / 2 {
+                toFrame.origin.x = 10
+            } else {
+                toFrame.origin.x = screenBounds.width - window.frame.width - 10
+            }
+
+            // Snap vertically within safe bounds
+            let topMargin = ZegoCallNarrowWindow.getStatusBarHight()
+            let bottomMargin = screenBounds.height - ZegoCallNarrowWindow.getVirtualHomeHeight() - window.frame.height
+
+            toFrame.origin.y = min(max(toFrame.origin.y, topMargin), bottomMargin)
+
+            UIView.animate(withDuration: 0.3,
+                           delay: 0,
+                           usingSpringWithDamping: 0.6,
+                           initialSpringVelocity: 0,
+                           options: [.curveEaseOut]) {
+                window.frame = toFrame
+            }
+
+        default:
+            break
         }
     }
 }
