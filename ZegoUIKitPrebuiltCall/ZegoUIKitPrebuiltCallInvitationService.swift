@@ -290,7 +290,7 @@ extension ZegoUIKitPrebuiltCallInvitationService: CallInvitationServiceApi {
         let data = ["call_id": callData.callID as AnyObject,
                     "invitees": self.conversionInvitees(list: callData.invitees!) as AnyObject,
                      "inviter": self.conversionInviter() as AnyObject,
-                     "customData": customerData as AnyObject].call_jsonString
+                     "custom_data": customerData as AnyObject].call_jsonString
         ZegoUIKitPrebuiltCallInvitationService.shared.invitationData = callData
         ZegoUIKitPrebuiltCallInvitationService.shared.invitees = buildInvitationUserList(callData)
         
@@ -375,7 +375,7 @@ extension ZegoUIKitPrebuiltCallInvitationService: CallInvitationServiceApi {
         let data = ["call_id": callData.callID as AnyObject,
                     "invitees": self.conversionInvitees(list: callData.invitees!) as AnyObject,
                      "inviter": self.conversionInviter() as AnyObject,
-                     "customData": customerData as AnyObject].call_jsonString
+                     "custom_data": customerData as AnyObject].call_jsonString
         ZegoUIKitPrebuiltCallInvitationService.shared.invitationData = callData
         ZegoUIKitPrebuiltCallInvitationService.shared.invitees = buildInvitationUserList(callData)
         
@@ -504,7 +504,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
         let reportData = ["call_id": dataDic?["call_id"] as AnyObject,
                           "inviter": inviter.userID as AnyObject,
                           "app_state": appState as AnyObject,
-                          "extended_data": dataDic?["customData"] as AnyObject]
+                          "extended_data": dataDic?["custom_data"] as AnyObject]
         ReportUtil.sharedInstance().reportEvent(callReceiveCallReportString, paramsDict: reportData)
         
         if ZegoUIKitPrebuiltCallInvitationService.shared.state != .normal {
@@ -858,7 +858,7 @@ class ZegoUIKitPrebuiltCallInvitationService_Help: NSObject, ZegoUIKitEventHandl
             callData.callID = dataDict["call_id"] as? String
             let invitees = dataDict["invitees"] as! Array<[String : String]>
             callData.invitees = self.getInviteeList(invitees)
-            callData.customData = dataDict["customData"] as? String
+            callData.customData = dataDict["custom_data"] as? String
             
             let inviter = dataDict["inviter"] as? [String: String]
             let inviterID = inviter?["id"] ?? ""
