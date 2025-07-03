@@ -12,7 +12,8 @@ class ZegoCallAudioPipView: ZegoCallPipView {
     lazy var timeLabel: UILabel = {
         let label: UILabel = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor.blue
+        label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 13, weight: .medium)
         return label
     }()
     
