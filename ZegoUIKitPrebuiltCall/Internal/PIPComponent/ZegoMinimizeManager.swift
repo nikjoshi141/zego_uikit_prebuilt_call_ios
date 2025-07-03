@@ -283,10 +283,10 @@ extension ZegoMinimizeManager {
                 pipAudioView = ZegoCallAudioPipView()
 
                 let targetFrame = CGRect(
-                    x: UIScreen.main.bounds.width - 65,
+                    x: UIScreen.main.bounds.width - 75,
                     y: 51 + ZegoCallNarrowWindow.getStatusBarHight(),
-                    width: 60,
-                    height: 60
+                    width: 70,
+                    height: 70
                 )
 
                 let narrowWindow = ZegoCallNarrowWindow(frame: targetFrame)

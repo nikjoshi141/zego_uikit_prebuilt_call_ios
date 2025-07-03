@@ -15,6 +15,7 @@ class ZegoCallNarrowWindow: UIView {
         super.init(frame: frame)
         self.layer.masksToBounds = true
         self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panGesture)))
+        backgroundColor = .white
     }
     
     required init?(coder: NSCoder) {
@@ -75,7 +76,7 @@ class ZegoCallNarrowWindow: UIView {
         NSLayoutConstraint.activate([
             contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            contentView.topAnchor.constraint(equalTo: self.topAnchor),
+            contentView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             contentView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
         self.layoutIfNeeded()

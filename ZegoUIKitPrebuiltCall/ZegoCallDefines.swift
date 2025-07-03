@@ -91,6 +91,11 @@ enum ZegoUIKitCallIconSetType: String, Hashable {
     
     // MARK: - Image handling
     func load() -> UIImage {
+        if self.rawValue == ZegoUIKitCallIconSetType.user_phone_icon.rawValue {
+            return UIImage(named: "ic_calling_audio_primary") ?? UIImage()
+        } else if self.rawValue == ZegoUIKitCallIconSetType.user_video_icon.rawValue {
+            return UIImage(named: "ic_calling_video_primary") ?? UIImage()
+        }
         let image = UIImage.resource.loadImage(name: self.rawValue, bundleName: "ZegoUIKitPrebuiltCall") ?? UIImage()
         return image
     }
