@@ -307,7 +307,36 @@ class CallOverlayWindow {
 
     private var overlayWindow: UIWindow?
 
+    // MARK: For apps without scene delegate
     func show(view: UIView, frame: CGRect) {
+        #if KINECTEDCARE
+        guard overlayWindow == nil else { return }
+
+        guard let windowScene = UIApplication.shared
+            .connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }) else {
+            print("❌ No active UIWindowScene found.")
+            return
+        }
+
+        let window = UIWindow(windowScene: windowScene)
+        window.frame = frame
+        window.windowLevel = .alert + 1
+        window.backgroundColor = .clear
+        window.isHidden = false
+
+        view.frame = window.bounds
+
+        let containerVC = UIViewController()
+        containerVC.view.backgroundColor = .clear
+        containerVC.view.addSubview(view)
+
+        window.rootViewController = containerVC
+        window.makeKeyAndVisible()
+
+        self.overlayWindow = window
+        #else
         if overlayWindow != nil {
             return // already showing
         }
@@ -328,7 +357,10 @@ class CallOverlayWindow {
         window.makeKeyAndVisible()
 
         self.overlayWindow = window
+        #endif
+
     }
+
 
     func hide() {
         overlayWindow?.isHidden = true
